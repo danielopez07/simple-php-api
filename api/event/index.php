@@ -7,7 +7,6 @@ header('Access-Control-Allow-Headers: Access-Control-Allow-Headers,Content-Type,
 include_once '../../models/Event.php';
 
 $input        = json_decode(file_get_contents("php://input"));
-var_dump($_POST);exit;
 $event        = new Event();
 $event->event = $input;
 $data         = $event->create();
