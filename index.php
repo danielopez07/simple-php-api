@@ -6,3 +6,4 @@ $router = new Router($request);
 
 $router->get('balance', 'api/balance/');
 $router->get('event', 'api/event/');
+$router->get('reset', 'api/reset/');
