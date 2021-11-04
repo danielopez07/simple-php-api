@@ -1,6 +1,8 @@
 # simple-php-api
 Simple API using pure PHP
 
+As per https://ipkiss.pragmazero.com/
+
 API based on:
 - https://www.youtube.com/watch?v=OEWXbpUMODk
 - https://github.com/bradtraversy/php_rest_myblog
