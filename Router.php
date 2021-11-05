@@ -12,7 +12,7 @@ class Router{
 
 		$uri = trim( $this->request, "/" );
 
-		$uri = explode("/", $uri);
+		$uri = explode("?", $uri);
 
 		if($uri[0] == trim($route, "/")){
 
