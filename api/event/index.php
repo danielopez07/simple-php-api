@@ -6,12 +6,32 @@ header('Access-Control-Allow-Headers: Access-Control-Allow-Headers,Content-Type,
 
 require dirname(__FILE__).'/../../models/Event.php';
 
-$input        = json_decode(file_get_contents("php://input"));
-$event        = new Event();
-$event->event = $input;
-$data         = $event->create();
+$input = json_decode(file_get_contents('php://input'));
+if (!isset($input->type)) {
+    http_response_code(400);
+    die('Type not specified');
+}
 
-echo json_encode([
-    'status' => 200,
-    'data'   => $data
-]);
+$event = new Event();
+
+switch ($input->type) {
+    case 'deposit':
+        $data = $event->deposit($input);
+        break;
+
+    case 'withdraw':
+        $data = $event->withdraw($input);
+        break;
+    
+    case 'transfer':
+        $data = $event->transfer($input);
+        break;
+    
+    default:
+        http_response_code(404);
+        die('Type not found');
+        break;
+}
+
+http_response_code($data['status']);
+die(json_encode($data['data']));
