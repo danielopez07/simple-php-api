@@ -86,10 +86,48 @@ class Event {
     }
 
     public function withdraw($input) {
-        return [
-            'status' => '200',
-            'data' => $input,
-        ];
+        if (!isset($input->origin) || !is_numeric($input->origin)) {
+            return [
+                'status' => '404',
+                'data'   => 'Destination not found',
+            ];
+        }
+        if (!isset($input->amount) || !is_numeric($input->amount) || $input->amount < 0) {
+            return [
+                'status' => '400',
+                'data'   => 'Amount not valid'
+            ];
+        }
+
+        $account_id         = $input->origin;
+        $account_ids_column = array_column($this->accounts, 0);
+        $account_index      = array_search($account_id, $account_ids_column);
+
+        if ($account_index === false) {
+            return [
+                'status' => '404',
+                'data'   => 'Destination not found',
+            ];
+        } elseif ((float)$input->amount > (float)$this->accounts[$account_index][1]) {
+            return [
+                'status' => '405',
+                'data'   => 'Insuficient funds',
+            ];
+        } else {
+            $this->accounts[$account_index][1] = (float)$this->accounts[$account_index][1] - (float)$input->amount;
+
+            $this->write_csv_file();
+
+            return [
+                'status' => '201',
+                'data'   => [
+                    'destination' => [
+                        'id'      => $this->accounts[$account_index][0],
+                        'balance' => $this->accounts[$account_index][1]
+                    ]
+                ] ,
+            ];
+        }
     }
 
     public function transfer($input) {
