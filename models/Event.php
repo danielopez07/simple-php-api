@@ -106,7 +106,7 @@ class Event {
         if ($account_index === false) {
             return [
                 'status' => '404',
-                'data'   => 'Origin not found',
+                'data'   => 0,
             ];
         } elseif ((float)$input->amount > (float)$this->accounts[$account_index][1]) {
             return [
@@ -156,7 +156,7 @@ class Event {
         if ($origin_account_index === false) {
             return [
                 'status' => '404',
-                'data'   => '0',
+                'data'   => 0,
             ];
         } elseif ((float)$input->amount > (float)$this->accounts[$origin_account_index][1]) {
             var_dump((float)$input->amount);
