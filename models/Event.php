@@ -89,7 +89,7 @@ class Event {
         if (!isset($input->origin) || !is_numeric($input->origin)) {
             return [
                 'status' => '404',
-                'data'   => 'Destination not found',
+                'data'   => 'Origin not found',
             ];
         }
         if (!isset($input->amount) || !is_numeric($input->amount) || $input->amount < 0) {
@@ -106,7 +106,7 @@ class Event {
         if ($account_index === false) {
             return [
                 'status' => '404',
-                'data'   => 'Destination not found',
+                'data'   => 'Origin not found',
             ];
         } elseif ((float)$input->amount > (float)$this->accounts[$account_index][1]) {
             return [
@@ -121,7 +121,7 @@ class Event {
             return [
                 'status' => '201',
                 'data'   => [
-                    'destination' => [
+                    'origin' => [
                         'id'      => $this->accounts[$account_index][0],
                         'balance' => $this->accounts[$account_index][1]
                     ]
