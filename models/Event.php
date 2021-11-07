@@ -131,9 +131,68 @@ class Event {
     }
 
     public function transfer($input) {
+        if (!isset($input->destination) || !is_numeric($input->destination)) {
+            return [
+                'status' => '404',
+                'data' => 'Destination not found',
+            ];
+        }
+        if (!isset($input->origin) || !is_numeric($input->origin)) {
+            return [
+                'status' => '404',
+                'data'   => 'Origin not found',
+            ];
+        }
+        if (!isset($input->amount) || !is_numeric($input->amount) || $input->amount < 0) {
+            return [
+                'status' => '400',
+                'data'   => 'Amount not valid'
+            ];
+        }
+
+        $origin_account_id         = $input->origin;
+        $origin_account_ids_column = array_column($this->accounts, 0);
+        $origin_account_index      = array_search($origin_account_id, $origin_account_ids_column);
+        if ($origin_account_index === false) {
+            return [
+                'status' => '404',
+                'data'   => '0',
+            ];
+        } elseif ((float)$input->amount > (float)$this->accounts[$origin_account_index][1]) {
+            var_dump((float)$input->amount);
+            var_dump((float)$this->accounts[$origin_account_index][1]);
+            return [
+                'status' => '405',
+                'data'   => 'Insuficient funds',
+            ];
+        }
+
+        $destination_account_id         = $input->destination;
+        $destination_account_ids_column = array_column($this->accounts, 0);
+        $destination_account_index      = array_search($destination_account_id, $destination_account_ids_column);
+        if ($destination_account_index === false) {
+            $this->accounts[] = [$destination_account_id, 0];
+            $destination_account_index = count($this->accounts) - 1;
+
+        }
+
+        $this->accounts[$origin_account_index][1] = (float)$this->accounts[$origin_account_index][1] - (float)$input->amount;
+        $this->accounts[$destination_account_index][1] = (float)$this->accounts[$destination_account_index][1] + (float)$input->amount;
+
+        $this->write_csv_file();
+
         return [
-            'status' => '200',
-            'data' => $input,
+            'status' => '201',
+            'data'   => [
+                'origin' => [
+                    'id'      => $this->accounts[$origin_account_index][0],
+                    'balance' => $this->accounts[$origin_account_index][1]
+                ],
+                'destination' => [
+                    'id'      => $this->accounts[$destination_account_index][0],
+                    'balance' => $this->accounts[$destination_account_index][1]
+                ]
+            ] ,
         ];
     }
 }
